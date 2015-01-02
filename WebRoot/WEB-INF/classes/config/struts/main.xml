@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1.7//EN"
+    "http://struts.apache.org/dtds/struts-2.1.7.dtd">
+<struts>
+	<package name="main" namespace="/main" extends="json-default">
+		<action name="goWelcome" class="MainAction" method="goWelcome">
+			<result name="success" type="redirect">../page/Welcome.jsp</result>
+		</action>
+
+		<!-- 用户管理  -->
+		<action name="goLogin" class="MainAction" method="goLogin">
+			<result name="success" type="redirect">../page/Login.jsp</result>
+		</action>
+
+		<action name="login" class="MainAction" method="login">
+			<result name="success" type="redirect">../page/Main.jsp</result>
+			<result name="input" type="redirect">../page/Login.jsp?error=${error}</result>
+		</action>
+		
+		<action name="doQueryPwd" class="MainAction" method="doQueryPwd">
+			<result name="success" type="json">
+				<param name="root">user</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doUpdatePassword" class="MainAction" method="doUpdatePassword">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="goLoginOut" class="MainAction" method="goLoginOut">
+			<result name="success" type="redirect">../page/Login.jsp</result>
+			<result name="input" type="redirect">../page/Login.jsp</result>
+		</action>
+		<!-- 用户管理 -->
+		<action name="goUserManager" class="MainAction" method="goUserManager">
+			<result name="success" type="redirect">../page/UserManager.jsp</result>
+		</action>
+		
+		<action name="doAddUser" class="MainAction" method="doAddUser">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateUser" class="MainAction" method="doUpdateUser">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteUser" class="MainAction" method="doDeleteUser">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="queryUserByJson" class="MainAction" method="queryUserByJson">
+			<result name="success" type="json">
+				<param name="root">userMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="queryUserDataGridByJson" class="MainAction" method="queryUserDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">userGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="queryRoleListByJson" class="MainAction" method="queryRoleListByJson">
+			<result name="success" type="json">
+				<param name="root">roleCombobox</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="querySelectByJson" class="MainAction" method="querySelectByJson">
+			<result name="success" type="json">
+				<param name="root">comboboxs</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="queryDictionaryByJson" class="MainAction" method="queryDictionaryByJson">
+			<result name="success" type="json">
+				<param name="root">dictionaryList</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		
+		<!--销售过程管理 -->
+		<action name="goMarketManager" class="MainAction" method="goMarketManager">
+			<result name="success" type="redirect">../page/MarketManager.jsp</result>
+		</action>
+		
+		<action name="queryMarketByJson" class="MainAction" method="queryMarketByJson">
+			<result name="success" type="json">
+				<param name="root">marketMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryMarketDataGridByJson" class="MainAction" method="queryMarketDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">marketGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doAddMarket" class="MainAction" method="doAddMarket">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateMarket" class="MainAction" method="doUpdateMarket">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteMarket" class="MainAction" method="doDeleteMarket">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<!--客户管理 -->
+		<action name="goCustomerManager" class="MainAction" method="goCustomerManager">
+			<result name="success" type="redirect">../page/CustomerManager.jsp</result>
+		</action>
+		
+		<action name="queryCustomerByJson" class="MainAction" method="queryCustomerByJson">
+			<result name="success" type="json">
+				<param name="root">customerMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryCustomerDataGridByJson" class="MainAction" method="queryCustomerDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">customerGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doAddCustomer" class="MainAction" method="doAddCustomer">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateCustomer" class="MainAction" method="doUpdateCustomer">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteCustomer" class="MainAction" method="doDeleteCustomer">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		
+		<!-- 客户资源分配管理 -->
+		<action name="goCustomerDistributionManager" class="MainAction" method="goCustomerDistributionManager">
+			<result name="success" type="redirect">../page/CustomerDistributionManager.jsp</result>
+		</action>
+		
+		<action name="queryCustomerDistributionDataGridByJson" class="MainAction" method="queryCustomerDistributionDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">customerGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="queryCustomerDistributionByJson" class="MainAction" method="queryCustomerDistributionByJson">
+			<result name="success" type="json">
+				<param name="root">customerMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDistribution" class="MainAction" method="doDistribution">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<!-- 联系人管理 -->
+		<action name="goContactManager" class="MainAction" method="goContactManager">
+			<result name="success" type="redirect">../page/ContactManager.jsp</result>
+		</action>
+		
+		<action name="queryContactByJson" class="MainAction" method="queryContactByJson">
+			<result name="success" type="json">
+				<param name="root">contactMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryContactDataGridByJson" class="MainAction" method="queryContactDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">contactGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<action name="doAddContact" class="MainAction" method="doAddContact">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateContact" class="MainAction" method="doUpdateContact">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteContact" class="MainAction" method="doDeleteContact">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<!-- 机会管理 -->
+		<action name="goChanceManager" class="MainAction" method="goChanceManager">
+			<result name="success" type="redirect">../page/ChanceManager.jsp</result>
+		</action>
+		
+		<action name="queryChanceByJson" class="MainAction" method="queryChanceByJson">
+			<result name="success" type="json">
+				<param name="root">chanceMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryChanceDataGridByJson" class="MainAction" method="queryChanceDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">chanceGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doAddChance" class="MainAction" method="doAddChance">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateChance" class="MainAction" method="doUpdateChance">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteChance" class="MainAction" method="doDeleteChance">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<!-- 投诉管理 -->
+		<action name="goComplainManager" class="MainAction" method="goComplainManager">
+			<result name="success" type="redirect">../page/ComplainManager.jsp</result>
+		</action>
+		
+		<action name="queryComplainByJson" class="MainAction" method="queryComplainByJson">
+			<result name="success" type="json">
+				<param name="root">complainMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryComplainDataGridByJson" class="MainAction" method="queryComplainDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">complainGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doReply" class="MainAction" method="doReply">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<!-- 消息管理 -->
+		<action name="goMessageLook" class="MainAction" method="goMessageLook">
+			<result name="success" type="redirect">../page/MessageLook.jsp</result>
+		</action>
+		
+		<action name="goMessageReply" class="MainAction" method="goMessageReply">
+			<result name="success" type="redirect">../page/MessageReply.jsp</result>
+		</action>
+				
+		<action name="queryMessageLookDataGridByJson" class="MainAction" method="queryMessageLookDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">messageGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doReplyMessage" class="MainAction" method="doReplyMessage">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<!-- 潜在客户分析 -->
+		<action name="goCustomerAnalyze" class="MainAction" method="goCustomerAnalyze">
+			<result name="success" type="redirect">../page/analyze/CustomerAnalyze.jsp</result>
+		</action>
+		<action name="queryCustomerAnalyze" class="MainAction" method="queryCustomerAnalyze">
+			<result name="success" type="json">
+				<param name="root">reportList</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="goBuyCarAnalyze" class="MainAction" method="goBuyCarAnalyze">
+			<result name="success" type="redirect">../page/analyze/BuyCarAnalyze.jsp</result>
+		</action>
+		<action name="queryBuyCarAnalyze" class="MainAction" method="queryBuyCarAnalyze">
+			<result name="success" type="json">
+				<param name="root">reportList</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="queryBuyCarAnalyze2" class="MainAction" method="queryBuyCarAnalyze2">
+			<result name="success" type="json">
+				<param name="root">reportList</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<!-- 维修回访  -->
+		<action name="goMaintainManager" class="MainAction" method="goMaintainManager">
+			<result name="success" type="redirect">../page/MaintainManager.jsp</result>
+		</action>
+		
+		<action name="queryMaintainByJson" class="MainAction" method="queryMaintainByJson">
+			<result name="success" type="json">
+				<param name="root">maintainMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryMaintainDataGridByJson" class="MainAction" method="queryMaintainDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">maintainGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doAddMaintain" class="MainAction" method="doAddMaintain">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateMaintain" class="MainAction" method="doUpdateMaintain">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteMaintain" class="MainAction" method="doDeleteMaintain">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		<!-- 销售回访  -->
+		<action name="goMarketReturnManager" class="MainAction" method="goMarketReturnManager">
+			<result name="success" type="redirect">../page/MarketReturnManager.jsp</result>
+		</action>
+		
+		<action name="queryMarketReturnByJson" class="MainAction" method="queryMarketReturnByJson">
+			<result name="success" type="json">
+				<param name="root">marketReturnMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryMarketReturnDataGridByJson" class="MainAction" method="queryMarketReturnDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">marketReturnGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doAddMarketReturn" class="MainAction" method="doAddMarketReturn">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateMarketReturn" class="MainAction" method="doUpdateMarketReturn">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteMarketReturn" class="MainAction" method="doDeleteMarketReturn">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		
+		
+		<!-- 角色管理  -->
+		<action name="goRoleManager" class="MainAction" method="goRoleManager">
+			<result name="success" type="redirect">../page/RoleManager.jsp</result>
+		</action>
+		
+		<action name="queryRoleByJson" class="MainAction" method="queryRoleByJson">
+			<result name="success" type="json">
+				<param name="root">roleMap</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+				
+		<action name="queryRoleDataGridByJson" class="MainAction" method="queryRoleDataGridByJson">
+			<result name="success" type="json">
+				<param name="root">roleGrid</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doAddRole" class="MainAction" method="doAddRole">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doUpdateRole" class="MainAction" method="doUpdateRole">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+		<action name="doDeleteRole" class="MainAction" method="doDeleteRole">
+			<result name="success" type="json">
+				<param name="root">code</param>
+				<param name="contentType">text/html</param>
+			</result>
+		</action>
+	</package>
+</struts>

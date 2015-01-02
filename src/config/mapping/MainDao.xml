@@ -1,0 +1,1113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mpgl.main.dao.MainDao">
+	
+	<sql id="limit">
+		limit #{pageIndex},#{pageSize}
+	</sql>
+
+	<select id="login" parameterType="com.mpgl.vo.Form" resultType="com.mpgl.vo.UserVo">
+		SELECT 
+			* 
+		FROM
+			t_user_info 
+		WHERE 1=1 
+			AND username = #{username}
+			AND password = #{password}
+			AND isLock = '0'
+	</select>
+	
+	<update id="updateUserPassword" parameterType="Map" >
+		UPDATE 
+			t_user_info
+		SET
+			password=#{password}
+		WHERE 
+			id = #{id}
+	</update>
+	
+	<select id="queryRoleByUser" parameterType="com.mpgl.vo.UserVo" resultType="com.mpgl.vo.RoleVo">
+		SELECT
+			t1.*
+		FROM 
+			t_role_info t1,
+			t_user_info t2
+		WHERE 1=1 
+			AND t1.id = t2.role_id
+			AND t2.id = #{id}
+	</select>
+	
+	<select id="queryMenuByRole" parameterType="com.mpgl.vo.RoleVo" resultType="com.mpgl.vo.MenuVo">
+		SELECT t3.id,t3.name
+		FROM 
+			t_role_submenu_rec t1, t_submenu_info t2,t_menu_info t3 
+		WHERE t1.submenu_id = t2.id AND t3.id=t2.menu_id AND t1.role_id = #{id}
+		GROUP BY t3.id,t3.name
+		ORDER BY t3.id 
+	</select>
+	
+	<select id="querySubMenuByMenu" parameterType="Map" resultType="com.mpgl.vo.SubMenuVo">
+		SELECT
+			t1.*
+		FROM
+			t_submenu_info t1,
+			t_role_submenu_rec t2
+		WHERE 1=1
+			AND t2.submenu_id = t1.id
+			AND t2.role_id = #{role_id}
+			AND t1.menu_id = #{menu_id}
+		ORDER BY order_num
+	</select>
+	
+	<select id="checkUserName" parameterType="com.mpgl.vo.UserVo" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM t_user_info where username = #{username}
+	</select>
+	
+	<select id="queryUserListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT t1.*,t2.id AS role_id,t2.name AS role_name FROM t_user_info t1,t_role_info t2
+		WHERE 1=1
+			AND t1.role_id = t2.id
+			<if test="username != null and username != ''">
+				AND t1.username LIKE CONCAT('%',#{username},'%') 
+			</if>
+			<if test="role_id != null and role_id != ''">
+				AND t1.role_id = #{role_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				AND t1.id = #{user_id}
+			</if>
+			<if test="isLock != null and isLock != ''">
+				AND t1.isLock = #{isLock}
+			</if>
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%', #{name}, '%')
+			</if>
+		ORDER BY t1.id DESC
+	</select>
+	
+	<select id="queryMarketListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_market_info
+		WHERE 1=1
+			<if test="buy_date != null and buy_date != ''">
+				and buy_date = #{buy_date}
+			</if>
+			<if test="market_type != null and market_type != ''">
+				and market_type = #{market_type}
+			</if>
+			<if test="buy_stage != null and buy_stage != ''">
+				and buy_stage = #{buy_stage}
+			</if>
+	</select>
+	
+	<select id="queryMarketList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_market_info
+		WHERE 1=1
+			<if test="buy_date != null and buy_date != ''">
+				and buy_date = #{buy_date}
+			</if>
+			<if test="market_type != null and market_type != ''">
+				and market_type = #{market_type}
+			</if>
+			<if test="buy_stage != null and buy_stage != ''">
+				and buy_stage = #{buy_stage}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryMarketListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_market_info
+		WHERE 1=1
+			<if test="buy_date != null and buy_date != ''">
+				and buy_date = #{buy_date}
+			</if>
+			<if test="market_type != null and market_type != ''">
+				and market_type = #{market_type}
+			</if>
+			<if test="buy_stage != null and buy_stage != ''">
+				and buy_stage = #{buy_stage}
+			</if>
+	</select>
+	
+	<insert id="addMarket" parameterType="com.mpgl.vo.MarketVo">
+		insert into `t_market_info`
+            (
+             `buy_date`,
+             `buy_money`,
+             `accept_money`,
+             `market_type`,
+             `buy_stage`,
+             `action_remark`,
+             `user_id`
+             )
+		values 
+			(
+		        #{buy_date},
+		        #{buy_money},
+		        #{accept_money},
+		        #{market_type},
+		        #{buy_stage},
+		        #{action_remark},
+		        #{user_id}
+	       ) 
+	</insert>
+	
+	<update id="updateMarket" parameterType="com.mpgl.vo.MarketVo">
+		UPDATE `t_market_info`
+		SET 
+		  `buy_date` = #{buy_date},
+		  `buy_money` = #{buy_money},
+		  `accept_money` = #{accept_money},
+		  `market_type` = #{market_type},
+		  `buy_stage` = #{buy_stage},
+		  `action_remark` = #{action_remark},
+		  `user_id` = #{user_id}
+		WHERE `id` = #{id}
+	</update>
+	
+	<delete id="deleteMarket" parameterType="com.mpgl.vo.MarketVo">
+		DELETE FROM t_market_info where id = #{id}
+	</delete>
+	
+	
+	<!-- 客户管理 -->
+	
+	<select id="queryCustomerListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_customer_info
+		WHERE 1=1
+			AND id = #{id}
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and phone = #{phone}
+			</if>
+			<if test="type != null and type != ''">
+				and type = #{type}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+	</select>
+	
+	<select id="queryCustomerList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_customer_info
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and phone = #{phone}
+			</if>
+			<if test="type != null and type != ''">
+				and type = #{type}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryCustomerListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_customer_info
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and phone = #{phone}
+			</if>
+			<if test="type != null and type != ''">
+				and type = #{type}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+	</select>
+	
+	<insert id="addCustomer" parameterType="com.mpgl.vo.CustomerVo">
+		insert into `t_customer_info`
+            (
+             `name`,
+             `sex`,
+             `age`,
+             `phone`,
+             `address`,
+             `fax`,
+             `email`,
+             `remark`,
+             `website`,
+             `income`,
+             `fraction`,
+             `source`,
+             `user_id`,
+             `STATUS`,
+             `TYPE`,
+             `employees`,
+             `trade`,
+             `city`,
+             `province`,
+             `city_code`
+             )
+		values 
+			(
+		        #{name},
+		        #{sex},
+		        #{age},
+		        #{phone},
+		        #{address},
+		        #{fax},
+		        #{email},
+		        #{remark},
+		        #{website},
+		        #{income},
+		        #{fraction},
+		        #{source},
+		        #{user_id},
+		        #{status},
+		        #{type},
+		        #{employees},
+		        #{trade},
+		        #{city},
+		        #{province},
+		        #{city_code}
+	       ) 
+	</insert>
+	
+	<update id="doDistribution" parameterType="com.mpgl.vo.CustomerVo">
+		UPDATE t_customer_info
+		SET
+			user_id = #{user_id}
+		WHERE 1=1
+			AND id IN (${ids})
+	</update>
+	
+	<update id="updateCustomer" parameterType="com.mpgl.vo.CustomerVo">
+		UPDATE `t_customer_info`
+		SET 
+		  `name` = #{name},
+		  `sex` = #{sex},
+		  `age` = #{age},
+		  `phone` = #{phone},
+		  `address` = #{address},
+		  `fax` = #{fax},
+		  `email` = #{email},
+		  `remark` = #{remark},
+		  `website` = #{website},
+		  `income` = #{income},
+		  `fraction` = #{fraction},
+		  `source` = #{source},
+		  `user_id` = #{user_id},
+		  `status` = #{status},
+		  `type` = #{type},
+		  `employees` = #{employees},
+		  `trade` = #{trade},
+		  `city` = #{city},
+		  `province` = #{province},
+		  `city_code` = #{city_code}
+		WHERE `id` = #{id}
+	</update>
+	
+	<delete id="deleteCustomer" parameterType="com.mpgl.vo.CustomerVo">
+		DELETE FROM t_customer_info where id = #{id}
+	</delete>
+	
+	<select id="queryUserList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT t1.*,t2.id AS role_id,t2.name AS role_name FROM t_user_info t1,t_role_info t2
+		WHERE 1=1
+			AND t1.role_id = t2.id
+			<if test="username != null and username != ''">
+				AND t1.username LIKE CONCAT('%',#{username},'%') 
+			</if>
+			<if test="role_id != null and role_id != ''">
+				AND t1.role_id = #{role_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				AND t1.id = #{user_id}
+			</if>
+			<if test="isLock != null and isLock != ''">
+				AND t1.isLock = #{isLock}
+			</if>
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%', #{name}, '%')
+			</if>
+		ORDER BY t1.id DESC
+		<include refid="limit"/>
+	</select>
+	<select id="queryUserListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM t_user_info t1,t_role_info t2
+		WHERE 1=1
+			AND t1.role_id = t2.id
+			<if test="username != null and username != ''">
+				AND t1.username LIKE CONCAT('%',#{username},'%') 
+			</if>
+			<if test="role_id != null and role_id != ''">
+				AND t1.role_id = #{role_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				AND t1.id = #{user_id}
+			</if>
+			<if test="isLock != null and isLock != ''">
+				AND t1.isLock = #{isLock}
+			</if>
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%', #{name}, '%')
+			</if>
+	</select>
+	
+	<select id="queryRoleList" resultType="Map">
+		SELECT * FROM t_role_info
+	</select>
+	<select id="queryRoleRefPage" parameterType="Map" resultType="Integer">
+		SELECT submenu_id AS id FROM t_role_submenu_rec WHERE 1=1
+		AND role_id = #{id}
+	</select>
+	<select id="queryPageList" resultType="Map">
+		SELECT 
+		  t1.*,
+		  t1.id as role_id,
+		  'false' AS ck ,
+		  t3.name as father_name
+		FROM
+		  t_submenu_info t1 
+		  LEFT JOIN `t_menu_info` t3
+ 		  ON t1.menu_id = t3.id
+		WHERE 1=1
+	</select>
+	
+	<select id="queryRoleListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT * FROM t_role_info t1
+		WHERE 1=1
+			<if test="id != null and id != ''">
+				AND t1.id = #{id}
+			</if>
+		ORDER BY t1.id DESC
+	</select>
+	<select id="queryRoleLists" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT * FROM t_role_info t1
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%',#{name},'%') 
+			</if>
+		ORDER BY t1.id DESC
+		<include refid="limit"/>
+	</select>
+	<select id="queryRoleListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT count(1) FROM t_role_info t1
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				AND t1.name LIKE CONCAT('%',#{name},'%') 
+			</if>
+	</select>
+	<insert id="addRoleRefPage" parameterType="com.mpgl.vo.RoleVo">
+		INSERT INTO t_role_submenu_rec (role_id,submenu_id) 
+		VALUES 
+		(
+			<if test="newId != null and newId != ''">
+				#{newId},
+			</if>
+			<if test="newId == null or newId == ''">
+				#{id},
+			</if>
+			#{submenu_id}
+		)
+	</insert>
+	<delete id="deleteRoleRefPage" parameterType="com.mpgl.vo.RoleVo">
+		DELETE FROM t_role_submenu_rec WHERE role_id = #{id}
+	</delete>
+	<insert id="addRole" parameterType="com.mpgl.vo.RoleVo">
+		<selectKey resultType="int" order="AFTER" keyProperty="newId">
+			SELECT LAST_INSERT_ID() AS newId
+		</selectKey>
+		INSERT INTO t_role_info 
+		(
+		  name
+		) 
+		VALUES
+		(
+		  #{name}
+		)
+	</insert>
+	<update id="updateRole" parameterType="com.mpgl.vo.RoleVo">
+		UPDATE 
+			t_role_info
+		SET 
+		  name = #{name}
+		WHERE id = #{id}
+	</update>
+	<delete id="deleteRole" parameterType="com.mpgl.vo.RoleVo">
+		DELETE FROM t_role_info WHERE id = #{id}
+	</delete>
+	
+	<select id="queryDictionaryByKey" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT * FROM t_dictionary_info WHERE 1=1 
+		<if test="dictionaryKey != null and dictionaryKey != ''">
+			AND dictionary_key = #{dictionaryKey}
+		</if>
+	</select>
+	
+	<insert id="addUser" parameterType="com.mpgl.vo.UserVo">
+		INSERT INTO t_user_info 
+		(
+		  username,
+		  password,
+		  role_id,
+		  create_time,
+		  isLock,
+		  name
+		) 
+		VALUES
+		(
+		  #{username},
+		  #{password},
+		  #{role_id},
+		  #{create_time},
+		  #{isLock},
+		  #{name}
+		)
+	</insert>
+	<update id="updateUser" parameterType="com.mpgl.vo.UserVo">
+		UPDATE 
+			t_user_info
+		SET 
+		  username = #{username},
+		  password = #{password},
+		  role_id = #{role_id},
+		  update_time = #{update_time},
+		  isLock = #{isLock},
+		  name = #{name}
+		WHERE id = #{id}
+	</update>
+	<delete id="deleteUser" parameterType="com.mpgl.vo.UserVo">
+		DELETE FROM t_user_info WHERE id = #{id}
+	</delete>
+	
+	<select id="queryContactListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+	SELECT 
+		*
+	FROM 
+		t_contact_info
+	WHERE 1=1
+		AND id = #{id}
+		<if test="name != null and name != ''">
+			and name like concat('%', #{name}, '%')
+		</if>
+		<if test="phone != null and phone != ''">
+			and phone = #{phone}
+		</if>
+		<if test="type != null and type != ''">
+			and type = #{type}
+		</if>
+		<if test="city != null and city != ''">
+			and city = #{city}
+		</if>
+	</select>
+	
+	<select id="queryContactList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_contact_info
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and phone = #{phone}
+			</if>
+			<if test="customer_id != null and customer_id != ''">
+				and customer_id = #{customer_id}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryContactListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_contact_info
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="phone != null and phone != ''">
+				and phone = #{phone}
+			</if>
+			<if test="customer_id != null and customer_id != ''">
+				and customer_id = #{customer_id}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+	</select>
+	
+	<insert id="addContact" parameterType="com.mpgl.vo.ContactVo">
+		insert into `t_contact_info`
+            (
+             `name`,
+             `sex`,
+             `age`,
+             `department`,
+             `conutry`,
+             `province`,
+             `city`,
+             `city_code`,
+             `address`,
+             `phone`,
+             `fax`,
+             `email`,
+             `remark`,
+             `customer_id`
+             )
+		values 
+			(
+		        #{name},
+		        #{sex},
+		        #{age},
+		        #{department},
+		        #{conutry},
+		        #{province},
+		        #{city},
+		        #{city_code},
+		        #{address},
+		        #{phone},
+		        #{fax},
+		        #{email},
+		        #{remark},
+		        #{customer_id}
+	       ) 
+	</insert>
+	
+	<update id="updateContact" parameterType="com.mpgl.vo.ContactVo">
+		UPDATE `t_contact_info`
+		SET 
+		  `name` = #{name},
+		  `sex` = #{sex},
+		  `age` = #{age},
+		  `phone` = #{phone},
+		  `address` = #{address},
+		  `fax` = #{fax},
+		  `email` = #{email},
+		  `remark` = #{remark},
+		  `department` = #{department},
+		  `conutry` = #{conutry},
+		  `city` = #{city},
+		  `province` = #{province},
+		  `city_code` = #{city_code},
+		  `customer_id` = #{customer_id}
+		WHERE `id` = #{id}
+	</update>
+	
+	<delete id="deleteContact" parameterType="com.mpgl.vo.ContactVo">
+		DELETE FROM t_contact_info where id = #{id}
+	</delete>
+	
+	<select id="queryChanceListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_chance_info
+		WHERE 1=1
+			AND id = #{id}
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="contact_id != null and contact_id != ''">
+				and contact_id = #{contact_id}
+			</if>
+			<if test="customer_id != null and customer_id != ''">
+				and customer_id = #{customer_id}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+	</select>
+	
+	<select id="queryChanceList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_chance_info
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="contact_id != null and contact_id != ''">
+				and contact_id = #{contact_id}
+			</if>
+			<if test="customer_id != null and customer_id != ''">
+				and customer_id = #{customer_id}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryChanceListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_chance_info
+		WHERE 1=1
+			<if test="name != null and name != ''">
+				and name like concat('%', #{name}, '%')
+			</if>
+			<if test="contact_id != null and contact_id != ''">
+				and contact_id = #{contact_id}
+			</if>
+			<if test="customer_id != null and customer_id != ''">
+				and customer_id = #{customer_id}
+			</if>
+			<if test="city != null and city != ''">
+				and city = #{city}
+			</if>
+	</select>
+	
+	<insert id="addChance" parameterType="com.mpgl.vo.ChanceVo">
+		insert into `t_chance_info`
+            (
+             `name`,
+             `customer_id`,
+             `probability`,
+             `start_date`,
+             `end_date`,
+             `contact_id`,
+             `remark`
+             )
+		values 
+			(
+	        #{name},
+	        #{customer_id},
+	        #{probability},
+	        #{start_date},
+	        #{end_date},
+	        #{contact_id},
+	        #{remark}
+	       ) 
+	</insert>
+	
+	<update id="updateChance" parameterType="com.mpgl.vo.ChanceVo">
+		UPDATE `t_chance_info`
+		SET 
+		  `name` = #{name},
+		  `customer_id` = #{customer_id},
+		  `probability` = #{probability},
+		  `end_date` = #{end_date},
+		  `start_date` = #{start_date},
+		  `contact_id` = #{contact_id},
+		  `remark` = #{remark}
+		WHERE `id` = #{id}
+	</update>
+	
+	<delete id="deleteChance" parameterType="com.mpgl.vo.ChanceVo">
+		DELETE FROM t_chance_info where id = #{id}
+	</delete>
+	
+	<!-- 维修回访管理 -->
+	<select id="queryMaintainListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_maintain_info
+		WHERE 1=1
+			AND id = #{id}
+	</select>
+	
+	<select id="queryMaintainList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_maintain_info
+		WHERE 1=1
+			<if test="return_title != null and return_title != ''">
+				and return_title like concat('%', #{return_title}, '%')
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and return_content = #{return_content}
+			</if>
+			<if test="project_description != null and project_description != ''">
+				and project_description = #{project_description}
+			</if>
+			<if test="return_date != null and return_date != ''">
+				and return_date = #{return_date}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryMaintainListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_maintain_info
+		WHERE 1=1
+			<if test="return_title != null and return_title != ''">
+				and return_title like concat('%', #{return_title}, '%')
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and return_content = #{return_content}
+			</if>
+			<if test="project_description != null and project_description != ''">
+				and project_description = #{project_description}
+			</if>
+			<if test="return_date != null and return_date != ''">
+				and return_date = #{return_date}
+			</if>
+	</select>
+	
+	<insert id="addMaintain" parameterType="com.mpgl.vo.MaintainVo">
+		INSERT INTO 
+			t_maintain_info
+			(return_date,return_title,return_content,project_description)
+		VALUES
+			(#{return_date},#{return_title},#{return_content},#{project_description})
+	</insert>
+	
+	<update id="updateMaintain" parameterType="com.mpgl.vo.MaintainVo">
+		UPDATE
+			t_maintain_info
+		SET
+			return_date = #{return_date},
+			return_title = #{return_title},
+			return_content = #{return_content},
+			project_description = #{project_description}
+		WHERE id = #{id}
+	</update>
+	<delete id="deleteMaintain" parameterType="com.mpgl.vo.MaintainVo">
+		delete from t_maintain_info	WHERE id = #{id}
+	</delete>
+	
+	<!-- 销售回访管理 -->
+	<select id="queryMarketReturnListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_marketreturn_info
+		WHERE 1=1
+			AND id = #{id}
+	</select>
+	
+	<select id="queryMarketReturnList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			* 
+		FROM 
+			t_marketreturn_info
+		WHERE 1=1
+			<if test="return_title != null and return_title != ''">
+				and return_title like concat('%', #{return_title}, '%')
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and return_content = #{return_content}
+			</if>
+			<if test="project_description != null and project_description != ''">
+				and project_description = #{project_description}
+			</if>
+			<if test="return_date != null and return_date != ''">
+				and return_date = #{return_date}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryMarketReturnListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_marketreturn_info
+		WHERE 1=1
+			<if test="return_title != null and return_title != ''">
+				and return_title like concat('%', #{return_title}, '%')
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and return_content = #{return_content}
+			</if>
+			<if test="project_description != null and project_description != ''">
+				and project_description = #{project_description}
+			</if>
+			<if test="return_date != null and return_date != ''">
+				and return_date = #{return_date}
+			</if>
+	</select>
+	
+	<insert id="addMarketReturn" parameterType="com.mpgl.vo.MarketReturnVo">
+		INSERT INTO 
+			t_marketreturn_info
+			(return_date,return_title,return_content,project_description)
+		VALUES
+			(#{return_date},#{return_title},#{return_content},#{project_description})
+	</insert>
+	
+	<update id="updateMarketReturn" parameterType="com.mpgl.vo.MarketReturnVo">
+		UPDATE
+			t_marketreturn_info
+		SET
+			return_date = #{return_date},
+			return_title = #{return_title},
+			return_content = #{return_content},
+			project_description = #{project_description}
+		WHERE id = #{id}
+	</update>
+	<delete id="deleteMarketReturn" parameterType="com.mpgl.vo.MarketReturnVo">
+		delete from t_marketreturn_info	WHERE id = #{id}
+	</delete>
+		
+	<!-- 投诉管理 -->	
+	<select id="queryComplainListBySingle" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_complain_info
+		WHERE 1=1
+			AND id = #{id}
+			<if test="title != null and title != ''">
+				and title like concat('%', #{title}, '%')
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and user_id = #{user_id}
+			</if>
+			<if test="create_date != null and create_date != ''">
+				and create_date = #{create_date}
+			</if>
+	</select>
+	
+	<select id="queryComplainList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_complain_info
+		WHERE 1=1
+			<if test="title != null and title != ''">
+				and title like concat('%', #{title}, '%')
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and user_id = #{user_id}
+			</if>
+			<if test="create_date != null and create_date != ''">
+				and create_date = #{create_date}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryComplainListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_complain_info
+		WHERE 1=1
+			<if test="title != null and title != ''">
+				and title like concat('%', #{title}, '%')
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and user_id = #{user_id}
+			</if>
+			<if test="create_date != null and create_date != ''">
+				and create_date = #{create_date}
+			</if>
+	</select>
+	
+	<update id="replyComplain" parameterType="com.mpgl.vo.ComplainVo">
+		UPDATE
+			t_complain_info
+		SET
+			reply_content = #{reply_content},
+			reply_date = #{reply_date},
+			user_id = #{user_id}
+		WHERE id in (${ids})
+	</update>
+	
+	<select id="queryMessageList" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT 
+			*
+		FROM 
+			t_message_info
+		WHERE 1=1
+			<if test="customer_id != null and customer_id != ''">
+				and customer_id = #{customer_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and user_id = #{user_id}
+			</if>
+			<if test="create_date != null and create_date != ''">
+				and create_date = #{create_date}
+			</if>
+		ORDER BY id DESC
+		<include refid="limit"/>
+	</select>
+	
+	<select id="queryMessageListCount" parameterType="com.mpgl.vo.Form" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_message_info
+		WHERE 1=1
+			<if test="customer_id != null and customer_id != ''">
+				and customer_id = #{customer_id}
+			</if>
+			<if test="user_id != null and user_id != ''">
+				and user_id = #{user_id}
+			</if>
+			<if test="create_date != null and create_date != ''">
+				and create_date = #{create_date}
+			</if>
+	</select>
+	
+	<update id="replyMessage" parameterType="com.mpgl.vo.MessageVo">
+		UPDATE 
+			t_message_info
+		SET
+			reply_content = #{reply_content},
+			reply_date = #{reply_date}
+		WHERE 1=1
+			AND id = #{id}
+	</update>
+	
+	<select id="queryCombobx" parameterType="com.mpgl.vo.Form" resultType="Map">
+		SELECT ${comboboxKey} as textField, ${comboboxValue} as valueField FROM ${comboboxTable} WHERE 1=1 
+		<if test="comboboxWhere != null and comboboxWhere != ''">
+			${comboboxWhere}
+		</if>
+	</select>
+	
+	<select id="queryCustomerAnalyze" resultType="java.lang.Integer">
+		SELECT 
+			count(1)
+		FROM 
+			t_customer_info
+		WHERE 1=1
+		<![CDATA[
+			AND INCOME >=1 AND INCOME <= 5000
+			AND type = 1
+		]]>
+		UNION ALL 
+		SELECT 
+			count(1)
+		FROM 
+			t_customer_info
+		WHERE 1=1
+		<![CDATA[
+			AND INCOME >5000 AND INCOME <= 10000
+			AND type = 1
+		]]>
+		UNION ALL 
+		SELECT 
+			count(1)
+		FROM 
+			t_customer_info
+		WHERE 1=1
+		<![CDATA[
+			AND INCOME > 10000
+			AND type = 1
+		]]>
+	</select>
+	
+	<select id="queryBuyCarAnalyze" parameterType="Map" resultType="java.lang.Integer">
+		SELECT 
+			COUNT(1)
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '31' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+		UNION ALL
+		SELECT 
+			COUNT(1)
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '93' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+		UNION ALL
+		SELECT 
+			COUNT(1)
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '186' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+		UNION ALL
+		SELECT 
+			COUNT(1)
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '365' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+	</select>
+	<select id="queryBuyCarAnalyze2" parameterType="Map" resultType="java.lang.Integer">
+		SELECT 
+			SUM(${column_name})
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '31' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+		UNION ALL
+		SELECT 
+			SUM(${column_name})
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '93' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+		UNION ALL
+		SELECT 
+			SUM(${column_name})
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '186' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+		UNION ALL
+		SELECT 
+			SUM(${column_name})
+		FROM 
+			T_MARKET_INFO
+		WHERE 1=1
+			<![CDATA[
+				AND buy_date >= DATE_SUB(#{nowDate}, INTERVAL '365' DAY) 
+				AND buy_date <= #{nowDate}
+			]]>
+	</select>
+</mapper> 
